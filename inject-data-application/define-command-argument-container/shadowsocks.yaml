@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: shadowsocks
+  labels:
+    k8s-app: ss
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: ss
+    spec:
+      containers:
+      - name: shadowsocks
+        image: shadowsocks:1.0
+        command: ["/usr/bin/ssserver"]
+        args: ["-s", "0.0.0.0", "-p", "12379", "-k", "$(SS_SECRET)", "-m", "aes-256-cfb"]
+        env:
+          - name: SS_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: ss-user-pass
+                key: sspassword.txt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shadowsocks
+spec:
+  type: NodePort
+  ports:
+  - port: 12379
+    targetPort: 12379
+  selector:
+    k8s-app: ss
