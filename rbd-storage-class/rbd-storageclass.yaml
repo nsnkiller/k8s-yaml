@@ -10,4 +10,5 @@ parameters:
   adminSecretNamespace: "kube-system"
   pool: k8s
   userId: admin
+  fsType: xfs
   userSecretName: ceph-secret-user
